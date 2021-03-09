@@ -1,0 +1,1 @@
+windeployqt TaskProcessTimer.exe -qmldir D:\Qt\Qt5.14.2\5.14.2\msvc2017\qml
