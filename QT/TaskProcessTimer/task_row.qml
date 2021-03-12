@@ -1,4 +1,4 @@
-import QtQuick 2.14
+import QtQuick 2.11
 import QtQuick.Controls 1.4
 
 Rectangle {
@@ -26,32 +26,43 @@ Rectangle {
             hours = n / 3600
             forward_timing = hours + ":" + minutes + ":" + seconds
 
-            var rest_n = down_n - n
-            reverse_timing = ""
-            if(rest_n < 0)
+            if(down_n != 0)
             {
-                reverse_timing = "-"
-                rest_n = -rest_n
+                var rest_n = down_n - n
+                reverse_timing = ""
+                if(rest_n < 0)
+                {
+                    reverse_timing = "-"
+                    rest_n = -rest_n
+                }
+                down_seconds = rest_n % 60
+                down_minutes = (rest_n / 60) % 60
+                down_hours = rest_n / 3600
+                reverse_timing += down_hours + ":" + down_minutes + ":" + down_seconds
             }
-            down_seconds = rest_n % 60
-            down_minutes = (rest_n / 60) % 60
-            down_hours = rest_n / 3600
-            reverse_timing += down_hours + ":" + down_minutes + ":" + down_seconds
         }
 
         onEstimated_hoursChanged: {
             down_n = estimated_hours * 3600 + estimated_minutes * 60 + estimated_seconds
+            if(down_n == 0)
+                count_down.text = ""
         }
         onEstimated_minutesChanged: {
             down_n = estimated_hours * 3600 + estimated_minutes * 60 + estimated_seconds
+            if(down_n == 0)
+                count_down.text = ""
         }
         onEstimated_secondsChanged: {
             down_n = estimated_hours * 3600 + estimated_minutes * 60 + estimated_seconds
+            if(down_n == 0)
+                count_down.text = ""
         }
         onDown_nChanged: {
             estimated_seconds = down_n % 60
             estimated_minutes = (down_n / 60) % 60
             estimated_hours = down_n / 3600
+            if(down_n == 0)
+                count_down.text = ""
         }
     }
 
@@ -63,7 +74,8 @@ Rectangle {
         onTriggered: {
             counter.n++
             count.text = counter.forward_timing
-            count_down.text = counter.reverse_timing
+            if(counter.down_n != 0)
+                count_down.text = counter.reverse_timing
         }
     }
 
@@ -90,6 +102,15 @@ Rectangle {
                 verticalAlignment: TextInput.AlignVCenter
                 font.pointSize: 8
                 focus: true
+                Keys.onTabPressed: {
+                    task_name.focus = true
+                }
+                Keys.onRightPressed: {
+                    task_name.focus = true
+                }
+                Keys.onLeftPressed: {
+                    task_estimated_minutes.focus = true
+                }
             }
         }
 
@@ -114,6 +135,15 @@ Rectangle {
                 verticalAlignment: TextInput.AlignVCenter
                 font.pointSize: 8
                 focus: true
+                Keys.onTabPressed: {
+                    task_estimated_hours.focus = true
+                }
+                Keys.onRightPressed: {
+                    task_estimated_hours.focus = true
+                }
+                Keys.onLeftPressed: {
+                    parent_task_name.focus = true
+                }
             }
         }
 
@@ -135,10 +165,19 @@ Rectangle {
                 id: task_estimated_hours
                 anchors.fill: parent
                 anchors.margins: 2
-                font.pointSize: 10
+                verticalAlignment: TextInput.AlignVCenter
+                font.pointSize: 9
                 focus: true
                 maximumLength: 2
-//                            autoScroll: false
+                Keys.onTabPressed: {
+                    task_estimated_minutes.focus = true
+                }
+                Keys.onRightPressed: {
+                    task_estimated_minutes.focus = true
+                }
+                Keys.onLeftPressed: {
+                    task_name.focus = true
+                }
 
                 onTextChanged: {
                     if (text == "")
@@ -182,9 +221,19 @@ Rectangle {
                 id: task_estimated_minutes
                 anchors.fill: parent
                 anchors.margins: 2
-                font.pointSize: 10
+                verticalAlignment: TextInput.AlignVCenter
+                font.pointSize: 9
                 focus: true
                 maximumLength: 2
+                Keys.onTabPressed: {
+                    parent_task_name.focus = true
+                }
+                Keys.onRightPressed: {
+                    parent_task_name.focus = true
+                }
+                Keys.onLeftPressed: {
+                    task_estimated_hours.focus = true
+                }
 
                 onTextChanged: {
                     if (text == "")
@@ -231,17 +280,19 @@ Rectangle {
                     return
                 }
 
-                if(task_timer.running)
+                if(text === "开始")
                 {
-                    task_timer.stop()
-                    counter.n = 0
                     task_timer.start()
+                    text = "重新开始"
                 }
                 else
                 {
+                    if(task_timer.running)
+                    {
+                        task_timer.stop()
+                    }
+                    counter.n = 0
                     task_timer.start()
-                    bt_1.text = "重新开始"
-                    bt_2.text = "暂停"
                 }
             }
         }
