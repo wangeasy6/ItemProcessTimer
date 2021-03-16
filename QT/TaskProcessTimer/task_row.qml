@@ -1,8 +1,10 @@
 import QtQuick 2.11
 import QtQuick.Controls 1.4
+import tpt.qt.Log 0.1
 
 Rectangle {
     id:task_row
+    property string task_id: ""
     QtObject {
         id: counter
         property int n : 0
@@ -77,6 +79,10 @@ Rectangle {
             if(counter.down_n != 0)
                 count_down.text = counter.reverse_timing
         }
+    }
+
+    Log {
+        id: log
     }
 
     Row {
@@ -279,11 +285,13 @@ Rectangle {
                     tips.open()
                     return
                 }
+                task_row.task_id = log.initTask("", task_name.text, "", counter.down_n)
 
                 if(text === "开始")
                 {
                     task_timer.start()
                     text = "重新开始"
+                    log.write(task_row.task_id, "开始", "")
                 }
                 else
                 {
@@ -293,6 +301,7 @@ Rectangle {
                     }
                     counter.n = 0
                     task_timer.start()
+                    log.write(task_row.task_id, "重新开始", "")
                 }
             }
         }
@@ -314,11 +323,13 @@ Rectangle {
                 {
                     task_timer.stop()
                     text = "继续"
+                    log.write(task_row.task_id, "暂停计时", "")
                 }
                 else
                 {
                     task_timer.start()
                     text = "暂停"
+                    log.write(task_row.task_id, "继续计时", "")
                 }
             }
         }
@@ -356,7 +367,6 @@ Rectangle {
             height: 20
             anchors.verticalCenter: parent.verticalCenter
             onClicked: {
-                // 日志
                 task_timer.stop()
                 counter.n = 0
                 counter.down_n = 0
@@ -370,6 +380,7 @@ Rectangle {
                 bt_2.text = "暂停"
                 task_row.destroy()
                 task_timing.rows--
+                log.write(task_row.task_id, "任务取消", "")
             }
         }
 
@@ -381,7 +392,6 @@ Rectangle {
             anchors.leftMargin: 10
             anchors.verticalCenter: parent.verticalCenter
             onClicked: {
-                // 日志
                 task_timer.stop()
                 counter.n = 0
                 counter.down_n = 0
@@ -395,6 +405,7 @@ Rectangle {
                 bt_2.text = "暂停"
                 task_row.destroy()
                 task_timing.rows--
+                log.write(task_row.task_id, "任务完成", "")
             }
         }
     }

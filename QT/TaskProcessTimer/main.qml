@@ -8,7 +8,7 @@ Window {
     visible: true
     width: 800
     height: 480
-    title: qsTr("Task Process Timer")
+    title: qsTr("Task Process Timer v0.0.4")
 
     MessageDialog {
         id: tips
