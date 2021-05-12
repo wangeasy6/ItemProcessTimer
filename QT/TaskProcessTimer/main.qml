@@ -1,4 +1,4 @@
-import QtQuick 2.11
+﻿import QtQuick 2.11
 import QtQuick.Window 2.11
 import QtQuick.Controls 1.4
 import QtQuick.Controls.Styles 1.4
@@ -6,9 +6,9 @@ import QtQuick.Dialogs 1.3
 
 Window {
     visible: true
-    width: 800
+    width: 700
     height: 480
-    title: qsTr("Task Process Timer v0.0.4")
+    title: qsTr("Task Process Timer v0.0.5")
 
     MessageDialog {
         id: tips
@@ -29,7 +29,7 @@ Window {
             function addRow(){
                 var component = Qt.createComponent("task_row.qml");
                 if (component.status === Component.Ready) {
-                    var row = component.createObject(task_timing ,{"y" : rows * 30 + 5});
+                    var row = component.createObject(task_timing ,{"y" : rows * 70 + 5});
                 }
                 rows++
             }
@@ -50,7 +50,7 @@ Window {
 //                    console.log("list[ " +i + " ] y = " + list[i].y)
 //                    console.log("list[ " +i + " ] height = " + list[i].height)
 
-                    if(list[i].y - pre_y > 30){
+                    if(list[i].y - pre_y > 70){
                         is_adjust = true
                     }
                     else
@@ -60,7 +60,7 @@ Window {
 
                     if(is_adjust)
                     {
-                        list[i].y -= 30
+                        list[i].y -= 70
                         continue
                     }
 
